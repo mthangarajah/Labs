@@ -1,0 +1,63 @@
+---
+title: "Lab 1"
+author: "Maryanne Thangarajah"
+date: "30/09/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Lab 1: Data Science I
+
+Link to github: 
+
+```{r, warning=FALSE, message=FALSE}
+library(mdsr)
+library(ggplot2)
+library(dplyr)
+library(scales)
+library(devtools)
+```
+
+
+```{r, message=FALSE}
+babyname <- make_babynames_dist()
+
+babyname_df <- babyname
+
+
+baby_percentdead <-
+  babyname_df %>%
+  group_by(sex, name) %>%
+  summarise(totalpeople = sum(n), percent_dead = (1 - (sum(est_alive_today)) /
+                                                    sum(n))) %>%
+  filter(totalpeople > 100000) %>%
+  group_by(sex) %>%
+  top_n(10)
+
+
+ggplot(baby_percentdead, aes(reorder(name, percent_dead), y = percent_dead, fill =
+                               sex)) +
+  geom_bar(stat = "identity",
+           width = 0.8,
+           position = "dodge")  +
+  coord_flip(ylim = c(0.50, 0.8)) +
+  scale_fill_manual(values = c("#e1ad01", "#1C86EE")) +
+  geom_text(aes(label = percent(percent_dead, accuracy = 0.1)), size = 4.0, hjust = -0.05) +
+  labs(title = "Deadest Names", subtitle = "Estimated percentage of Americans with a given name born since \n1900 who were dead as of Jan. 1, 2014") +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.position = "none",
+    axis.ticks = element_blank(),
+    plot.background = element_blank(),
+    plot.title = element_text(face = "bold", hjust = -0.14),
+    plot.subtitle = element_text(hjust = -0.14),
+    axis.text.x = element_blank()
+  ) +
+  xlab(element_blank()) + ylab(element_blank()) + scale_x_discrete(expand =
+                                                                     expansion(mult = c(0, .03)))  + scale_y_continuous(expand = expansion(mult = c(0, .07)))
+```
+
