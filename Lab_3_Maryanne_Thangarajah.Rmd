@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-**Link to github Repository:** 
+**Link to github Repository:** https://github.com/mthangarajah/Labs.git
 
 
 ## One play of the Monty Hall Stimulation
@@ -93,7 +93,6 @@ one_play <- function(switch) {
 ## Multiple Plays
 
 ```{r}
-
 # Function used to run multiple Monty Hall Simulations with n as number of plays and switch, if the door chosen should be switched
 multiple <- function(n,switch) {
   
