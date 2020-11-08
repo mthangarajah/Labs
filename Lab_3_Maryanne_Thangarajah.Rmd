@@ -1,0 +1,127 @@
+---
+title: "Lab 3"
+author: "Maryanne Thangarajah"
+date: "02/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Link to github Repository:** 
+
+
+## One play of the Monty Hall Stimulation
+```{r, message = FALSE, warning = FALSE}
+#Load the libraries needed
+library(dplyr)
+
+
+#Set seed
+set.seed(123456)
+
+
+# Function for one play of the Monty Hall Stimulation
+one_play <- function(switch) {
+  
+  # Variable for the total number of doors to choose from
+  total_doors = data.frame(choices = c(1,2,3))
+  
+  #List of doors
+  door = list(1,2,3)
+  
+  # Variable for the door chosen by the person
+  x_person = sample(3,1)
+  
+  # Variable for the door for the prize
+  x_prize = sample(3,1)
+  
+  # If the person chooses the same door as the prize
+  if (x_person == x_prize){
+    
+    # Create door revealed variable by using list of doors and remove
+    #door chosen by the person
+    door_revealed = door[door != x_person]
+    
+    #Update variable with sample of the doors left
+    door_revealed = sample(door_revealed, 1)
+    
+    #Unlist the door chosen
+    door_revealed = unlist(door_revealed)
+    
+    
+    # If the door chosen by the person is different from the prize
+  }else if (x_person != x_prize){
+    
+    # Create the door revealed variable using the total_doors dataframe
+    door_revealed <- total_doors %>%
+      
+      #Remove the door chosen by the person by filtering
+      filter(choices != x_person) %>%
+      
+      #Remove the door with the prize  by filtering
+      filter(choices != x_prize)
+    
+    # Get the door chosen to be revealed
+    door_revealed <- door_revealed$choices
+  }
+  
+  # If switch is chosen to be true
+  if (switch == TRUE) {
+    
+    # Create new dataframe to switch the doors
+    change_position <- total_doors %>%
+      
+      # Remove the chosen door by filtering
+      filter(choices != x_person) %>%
+      
+      # Remove the door revealed by filtering
+      filter(choices != door_revealed)
+    
+    # Update the door chosen by the person
+    x_person = change_position$choices
+  }
+  
+  # Checks if the person opened the right door; 1 if they did, otherwise 0
+  return(if_else(x_person == x_prize, 1, 0))
+}
+
+```
+
+
+## Multiple Plays
+
+```{r}
+
+# Function used to run multiple Monty Hall Simulations with n as number of plays and switch, if the door chosen should be switched
+multiple <- function(n,switch) {
+  
+  # Replicate the monty Hall n times, indicating the switch variable
+  x <- replicate(n, one_play(switch))
+  
+  #Return the proportion of games won by finding the sum of games won divided by number of simulations
+  return (sum(unlist(x))/n)
+}
+
+```
+
+## Test: Switch = FALSE
+
+```{r}
+# Test to see the percent of games won when switch is true
+f <- multiple(1000, FALSE)
+
+paste0("The percent of times the game was won when switch is false was ", f*100, "%")
+
+```
+
+
+## Test: Switch = TRUE
+
+```{r}
+# Test to see the percent of games won when switch is false
+t <- multiple(1000, TRUE)
+
+paste0("The percent of times the game was won when switch is true was ", t*100, "%")
+```
